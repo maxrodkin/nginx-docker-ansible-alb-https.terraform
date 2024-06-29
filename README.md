@@ -17,8 +17,8 @@ Please include a brief guide/document in your submission that outlines your appr
 ## Create SSL self-signed certificale files
 
 ```
-cd .\ssl
-chmod +x create_self_cert.sh ; .\create_self_cert.sh
+cd ./ssl
+chmod +x create_self_cert.sh ; ./create_self_cert.sh
 ```
 
 Left the created files as is.
@@ -26,12 +26,13 @@ Left the created files as is.
 ## Create the infrastructure (terraform , AWS CLI setup is omitted)
 
 ```
+cd ..
 terraform init
 terraform plan -out terraform.tfplan
 terraform apply "terraform.tfplan"
 ```
 
-use the terraform output to connect to the instances and ALB
+use the terraform output to connect to the instances and ALB.\
 on an ansible instance you may check the reacability of nginx instances:
 
 ```
@@ -44,8 +45,39 @@ on an ansible instance you may check the reacability of nginx instances:
 ...
 ```
 
+shut down 2 instances. Check them from ansible:
+```
+$ sudo su
+# cd /opt/mydir
+# /usr/local/bin/ansible -i inventory nginx --key-file ansible.pem -m ping
+```
+
+Check the service with curl or browser immidiatelly. You will get the HTTP 503 error.
+In 1 minute the target group rebuilds the service with health-check and switches all trafick on last alive nginx.
+
+Start the instances again. It will be restored in service in couple of minutes.
+
 ## Destroy the infrastructure
 ```
 terraform plan -destroy -out terraform.tfplan
 terraform apply "terraform.tfplan"
 ```
+## Further improvements of current code:
+
+1. put all af assets in S3 and read them during cloud-init
+2. use different AZs for nginx
+3. use last "terraform-aws-modules/alb/aws" as the "8.7.0" is outdated
+4. use signed certificate with legal DNS zone
+   
+## Further scaling:
+
+1. nginx redis cache
+2. EFS for single instance of content
+3. AutScaing Groups
+4. ECS/EKS
+5. S3 for static content
+6. ElastiCache
+7. Route53 health-checks, DNS failover , advanced routing
+8. CloudFront
+9. AWS Global Accelerator
+   

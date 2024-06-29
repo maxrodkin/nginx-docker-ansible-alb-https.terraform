@@ -25,7 +25,7 @@ runcmd:
   - systemctl start docker
   - systemctl enable docker
   - usermod -a -G docker ec2-user
-  - [ sh, -c, " cd /opt/mydir/ ; docker run -d -p 80:80 --name nginx -v /opt/mydir/default.conf:/etc/nginx/conf.d/default.conf nginx" ]
+  - [ sh, -c, " cd /opt/mydir/ ; docker run -d -p 80:80 --restart always --name nginx -v /opt/mydir/default.conf:/etc/nginx/conf.d/default.conf nginx" ]
   - docker ps
 EOT
   }
