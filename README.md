@@ -56,10 +56,6 @@ On an ansible instance you may check the reacability of nginx instances:
 10.0.0.156 | SUCCESS => {
 ...
 ```
-and modify the behavior of nginx with the ansible:
-```
-# /usr/local/bin/ansible-playbook -i inventory playbook.yaml
-```
 
 Shut down 2 instances. Check them from ansible:
 ```
@@ -72,6 +68,11 @@ Check the service with curl or browser immidiatelly. You will get the HTTP 503 e
 In 1 minute the target group rebuilds the service with health-check and switches all trafick on last alive nginx.
 
 Start the instances again. It will be restored in service in couple of minutes.
+
+Modify the behavior of nginx with the ansible:
+```
+# /usr/local/bin/ansible-playbook -i inventory playbook.yaml
+```
 
 ## Destroy the infrastructure
 ```

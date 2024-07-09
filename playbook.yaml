@@ -28,6 +28,11 @@
         mode: '0644'
         backup: yes
 
+    - name: Stop existing Nginx container
+      docker_container:
+        name: nginx
+        state: stopped
+        
     - name: Restart Nginx container to apply new configuration
       docker_container:
         name: nginx
