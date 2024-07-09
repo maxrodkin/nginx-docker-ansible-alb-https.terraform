@@ -1,0 +1,39 @@
+---
+- name: Replace Nginx default.conf on remote host
+  hosts: nginx
+  become: true
+  become_user: root
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  tasks:
+    - name: Install Docker SDK for Python
+      pip:
+        name: docker
+        state: present
+        executable: pip3
+
+    - name: Downgrade urllib3 to a compatible version
+      pip:
+        name: urllib3==1.26.16
+        state: present
+        executable: pip3
+
+    - name: Copy new default.conf to remote host
+      copy:
+        src: /opt/mydir/default.conf
+        dest: /opt/mydir/default.conf
+        owner: root
+        group: root
+        mode: '0644'
+        backup: yes
+
+    - name: Restart Nginx container to apply new configuration
+      docker_container:
+        name: nginx
+        state: started
+        restart_policy: always
+        ports:
+          - "80:80"
+        volumes:
+          - /opt/mydir/default.conf:/etc/nginx/conf.d/default.conf

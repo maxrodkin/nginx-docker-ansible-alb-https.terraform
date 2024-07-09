@@ -32,8 +32,20 @@ terraform plan -out terraform.tfplan
 terraform apply "terraform.tfplan"
 ```
 
-use the terraform output to connect to the instances and ALB.\
-on an ansible instance you may check the reacability of nginx instances:
+Use the terraform output to connect to the instances and ALB, for example:
+```
+Outputs:
+
+alb_connect_command = <<-EOT
+    curl http://rodkin-test-alb-1987660604.us-east-1.elb.amazonaws.com/phrase
+    curl  --insecure -I https://rodkin-test-alb-1987660604.us-east-1.elb.amazonaws.com/phrase
+EOT
+ssm_connect_command_ansible = "aws ssm start-session --target i-02466c769df5d4905 --region us-east-1"
+ssm_connect_command_nginx = [
+    "aws ssm start-session --target i-0c8789a0691489611 --region us-east-1",
+```
+
+On an ansible instance you may check the reacability of nginx instances:
 
 ```
  cat /opt/mydir/ansible-ping-test.txt
@@ -44,8 +56,12 @@ on an ansible instance you may check the reacability of nginx instances:
 10.0.0.156 | SUCCESS => {
 ...
 ```
+and modify the behavior of nginx with the ansible:
+```
+# /usr/local/bin/ansible-playbook -i inventory playbook.yaml
+```
 
-shut down 2 instances. Check them from ansible:
+Shut down 2 instances. Check them from ansible:
 ```
 $ sudo su
 # cd /opt/mydir
